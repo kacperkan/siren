@@ -1,4 +1,5 @@
 import csv
+import trimesh
 import glob
 import math
 import os
@@ -392,11 +393,11 @@ class PointCloud(Dataset):
         super().__init__()
 
         print("Loading point cloud")
-        point_cloud = np.genfromtxt(pointcloud_path)
+        point_cloud = trimesh.load(pointcloud_path)
         print("Finished loading point cloud")
 
-        coords = point_cloud[:, :3]
-        self.normals = point_cloud[:, 3:]
+        coords = np.array(point_cloud.vertices)
+        self.normals = np.array(point_cloud.vertex_normals)
 
         # Reshape point cloud such that it lies in bounding box of (-1, 1) (distorts geometry, but makes for high
         # sample efficiency)

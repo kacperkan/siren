@@ -4,6 +4,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - conda-forge::trimesh
   - _libgcc_mutex=0.1=main
   - absl-py=0.9.0=py36_0
   - attrs=19.3.0=py_0
@@ -216,4 +217,5 @@ dependencies:
     - termcolor==1.1.0
     - wrapt==1.12.1
     - youtube-dl==2020.6.6
+    - dataclasses
 
