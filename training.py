@@ -23,7 +23,9 @@ def train(model, train_dataloader, epochs, lr, steps_til_summary, epochs_til_che
                                   history_size=50, line_search_fn='strong_wolfe')
 
     if os.path.exists(model_dir):
-        print("The model directory %s exists. Overwrite? (y/n)"%model_dir)
+        print("The model directory %s exists"%model_dir)
+        if os.path.exists(model_dir + "_backup"):
+            shutil.rmtree(model_dir + "_backup")
         shutil.move(model_dir, model_dir + "_backup")
     else:
         os.makedirs(model_dir)

@@ -33,6 +33,15 @@ class Sine(nn.Module):
         # See paper sec. 3.2, final paragraph, and supplement Sec. 1.5 for discussion of factor 30
         return torch.sin(30 * input)
 
+class Hosc(nn.Module):
+    def __init__(self, a: float = 1, b: float = 1) -> None:
+        super().__init__()
+        self.a = a
+        self.b = b
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return torch.tanh(self.a * torch.sin(self.b * x))
+
 
 class FCBlock(MetaModule):
     '''A fully connected neural network that also allows swapping out the weights when used with a hypernetwork.
@@ -40,7 +49,7 @@ class FCBlock(MetaModule):
     '''
 
     def __init__(self, in_features, out_features, num_hidden_layers, hidden_features,
-                 outermost_linear=False, nonlinearity='relu', weight_init=None):
+                 outermost_linear=False, nonlinearity='relu', weight_init=None, **kwargs):
         super().__init__()
 
         self.first_layer_init = None
@@ -53,7 +62,8 @@ class FCBlock(MetaModule):
                          'tanh':(nn.Tanh(), init_weights_xavier, None),
                          'selu':(nn.SELU(inplace=True), init_weights_selu, None),
                          'softplus':(nn.Softplus(), init_weights_normal, None),
-                         'elu':(nn.ELU(inplace=True), init_weights_elu, None)}
+                         'elu':(nn.ELU(inplace=True), init_weights_elu, None),
+                         'hosc':(Hosc(a=kwargs.get("a", 1.0), b=kwargs.get("b", 1.0)), init_weights_normal, None),}
 
         nl, nl_weight_init, first_layer_init = nls_and_inits[nonlinearity]
 
@@ -137,7 +147,7 @@ class SingleBVPNet(MetaModule):
         self.image_downsampling = ImageDownsampling(sidelength=kwargs.get('sidelength', None),
                                                     downsample=kwargs.get('downsample', False))
         self.net = FCBlock(in_features=in_features, out_features=out_features, num_hidden_layers=num_hidden_layers,
-                           hidden_features=hidden_features, outermost_linear=True, nonlinearity=type)
+                           hidden_features=hidden_features, outermost_linear=True, nonlinearity=type, **kwargs)
         print(self)
 
     def forward(self, model_input, params=None):

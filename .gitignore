@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 jobs
 queue_cc.py
+
+.logs
+data/stanford

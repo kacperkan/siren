@@ -35,6 +35,8 @@ p.add_argument('--point_cloud_path', type=str, default='/home/sitzmann/data/poin
                help='Options are "sine" (all sine activations) and "mixed" (first layer sine, other layers tanh)')
 
 p.add_argument('--checkpoint_path', default=None, help='Checkpoint to trained model.')
+p.add_argument("--a", type=float, default=1.0, help="`a` parameter in HOSC")
+p.add_argument("--b", type=float, default=1.0, help="`b` parameter in HOSC")
 opt = p.parse_args()
 
 
@@ -45,7 +47,7 @@ dataloader = DataLoader(sdf_dataset, shuffle=True, batch_size=1, pin_memory=True
 if opt.model_type == 'nerf':
     model = modules.SingleBVPNet(type='relu', mode='nerf', in_features=3)
 else:
-    model = modules.SingleBVPNet(type=opt.model_type, in_features=3)
+    model = modules.SingleBVPNet(type=opt.model_type, in_features=3, a=opt.a, b=opt.b)
 model.cuda()
 
 # Define the loss
